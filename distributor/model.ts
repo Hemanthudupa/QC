@@ -111,4 +111,5 @@ Distributor.belongsTo(User, {
 //   foreignKey: "distributorId",
 //   as: "consumer",
 // });
+
 export default Distributor;

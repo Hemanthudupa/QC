@@ -158,8 +158,14 @@ const qc_Schema = {
 
 QC.init(qc_Schema, { sequelize, tableName: "qc", modelName: "QC" });
 
-QC.hasOne(Distributor, {
-  foreignKey: "id",
-  sourceKey: "distributorId",
-  as: "distributor",
+QC.belongsTo(Distributor, {
+  foreignKey: "distributorId", // Foreign key in QC table
+  targetKey: "id", // Primary key in Distributor table
+  as: "distributor", // Alias for the relationship
+});
+
+QC.belongsTo(Order, {
+  foreignKey: "orderId",
+  targetKey: "id",
+  as: "order",
 });

@@ -7,11 +7,14 @@ const route = Router();
 route.use(ensureEmbed);
 
 route.post(
-  "/emded-add-rmsDetails",
+  "/emded-add-rmsDetails/:orderId",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body as any;
-      res.status(StatusCodes.CREATED).send(await embedAddRmsDetais(data));
+      const { orderId } = req.params as any;
+      res
+        .status(StatusCodes.CREATED)
+        .send(await embedAddRmsDetais(data, orderId));
     } catch (error) {
       next(error);
     }

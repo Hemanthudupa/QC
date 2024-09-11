@@ -2,6 +2,7 @@ import { Op } from "sequelize";
 import { OrderDetails } from "../types";
 import APIError from "../utils/api-error";
 import { Order } from "./model";
+import { OderDetailsVal } from "./validation";
 
 export async function registerOrder(orderDetails: OrderDetails) {
   try {
@@ -13,11 +14,18 @@ export async function registerOrder(orderDetails: OrderDetails) {
     if (orderFromDb) {
       throw new APIError("duplicate order number ", " DUPLICATE ORDER NUMBER ");
     }
-    if (orderDetails.count == 0) {
-      orderDetails.status = "COMPLETED";
+    const validatedOrderDetails = await OderDetailsVal.validateAsync(
+      orderDetails
+    );
+
+    if (validatedOrderDetails.count == 0) {
+      validatedOrderDetails.status = "COMPLETED";
+    } else {
+      validatedOrderDetails.embedCount = validatedOrderDetails.count;
+      validatedOrderDetails.qcCount = validatedOrderDetails.count;
     }
 
-    const data = await Order.create(orderDetails);
+    const data = await Order.create(validatedOrderDetails);
     return {
       message: "successfully created order details ",
       data,

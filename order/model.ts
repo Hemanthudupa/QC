@@ -24,6 +24,8 @@ export class Order extends Model<
   declare status: CreationOptional<string>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+  declare embedCount: CreationOptional<number>;
+  declare qcCount: CreationOptional<number>;
 }
 
 const orderSchema = {
@@ -42,6 +44,14 @@ const orderSchema = {
   },
   count: {
     type: NUMBER,
+  },
+  embedCount: {
+    type: NUMBER,
+    defaultValue: 0,
+  },
+  qcCount: {
+    type: NUMBER,
+    defaultValue: 0,
   },
   createdAt: {
     type: DATE,

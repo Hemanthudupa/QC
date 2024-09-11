@@ -5,9 +5,26 @@ import APIError from "../utils/api-error";
 import { embedAddRmsDetaisValidation } from "./validation";
 import Distributor from "../distributor/model";
 import { Autogenerate_Value } from "../autogenerate_value/model";
+import { Order } from "../order/model";
 
-export async function embedAddRmsDetais(embedRmsDetails: embedRmsDetails) {
+export async function embedAddRmsDetais(
+  embedRmsDetails: embedRmsDetails,
+  orderId: string
+) {
   try {
+    const orderFromDb = await Order.findOne({
+      where: {
+        id: orderId,
+        embedCount: {
+          [Op.gt]: 0,
+        },
+      },
+    });
+
+    if (!orderFromDb) {
+      throw new APIError("invalid Order id ", "INVALID ORDER ID ");
+    }
+
     const validatedEmbedAddRmsDetails =
       await embedAddRmsDetaisValidation.validateAsync(embedRmsDetails);
 
@@ -51,6 +68,8 @@ export async function embedAddRmsDetais(embedRmsDetails: embedRmsDetails) {
     // await autogenerate_Value_fromDB?.save();
 
     const createdData = await QC.create(validatedEmbedAddRmsDetails);
+    orderFromDb.embedCount = orderFromDb.embedCount - 1;
+    await orderFromDb.save();
     return {
       message: "data successfully created  by EMBDED team",
       data: createdData,

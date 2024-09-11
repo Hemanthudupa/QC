@@ -8,6 +8,8 @@ export const USER_ROLES: Array<string> = [
   "CONSUMER",
   "EMBED",
   "QC",
+  "CONTROLLER",
+  "MOTOR",
 ];
 
 export const MOTOR_TYPE = {

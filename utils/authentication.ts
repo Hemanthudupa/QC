@@ -10,6 +10,10 @@ config({
   path: join(__dirname, ".env", "local.env"),
 });
 
+import { hashSync } from "bcryptjs";
+import { logError } from "./console";
+import { USER_ROLES } from "./constants";
+
 export async function generateJwtToken(user: userType) {
   try {
     const token = sign(user, process.env.JWT_KEY as string, {
@@ -56,6 +60,15 @@ export async function authorizeUser(
   }
 }
 
+export function hashPassword(password: string) {
+  try {
+    return hashSync(password, 10);
+  } catch (error) {
+    logError(error);
+    throw error;
+  }
+}
+
 export async function ensureQC(
   req: Request,
   res: Response,
@@ -91,6 +104,47 @@ export async function ensureEmbed(
       res.status(StatusCodes.UNAUTHORIZED).send({
         message: " Only EMBED people can  perform this action ",
         code: "UNAUTHORIZED",
+      });
+    }
+  } catch (error) {
+    throw new APIError((error as APIError).message, (error as APIError).code);
+  }
+}
+
+export async function ensureController(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    let { role } = (req as any).user;
+    if (role == USER_ROLES[9]) {
+      next();
+      return;
+    } else {
+      res.status(400).send({
+        message: "only controller people can perfrom this action ",
+        code: "ONLY CONTROLLER PEOPLE CAN PERFROM THIS ACTION",
+      });
+    }
+  } catch (error) {
+    throw new APIError((error as APIError).message, (error as APIError).code);
+  }
+}
+
+export async function ensureMotor(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { role } = (req as any).user;
+    if (role == USER_ROLES[10]) {
+      next();
+    } else {
+      res.status(400).send({
+        message: " only motor people can perform this action ",
+        code: " ONLY MOTOR PEOPLE CAN PERFORM THIS ACTION ",
       });
     }
   } catch (error) {
