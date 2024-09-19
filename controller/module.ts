@@ -4,7 +4,8 @@ import APIError from "../utils/api-error";
 
 export async function downloadControllerDeviceDetails(
   sDate: string,
-  eDate: string
+  eDate: string,
+  orderId: string
 ) {
   try {
     if (sDate && eDate) {
@@ -20,6 +21,8 @@ export async function downloadControllerDeviceDetails(
             [Op.gt]: startDate,
             [Op.lt]: endDate,
           },
+          orderId,
+          isUpdated: true,
         },
         attributes: ["controllerSerialNumber", "rmsDeviceId", "imeiNo"],
       });

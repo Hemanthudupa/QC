@@ -1,9 +1,22 @@
 import { Op } from "sequelize";
 import APIError from "../utils/api-error";
 import { QC } from "../qc/model";
+import { Order } from "../order/model";
 
-export async function downloadMotorDeviceDetails(sDate: string, eDate: string) {
+export async function downloadMotorDeviceDetails(
+  sDate: string,
+  eDate: string,
+  orderId: string
+) {
   try {
+    const order = await Order.findOne({
+      where: {
+        id: orderId,
+      },
+    });
+    if (!order) {
+      throw new APIError(" invlaid order id ", " INVALID ORDER ID ");
+    }
     if (sDate && eDate) {
       let startDate = new Date(`${sDate}`);
       let endDate = new Date(`${eDate}`);
@@ -17,6 +30,8 @@ export async function downloadMotorDeviceDetails(sDate: string, eDate: string) {
             [Op.gt]: startDate,
             [Op.lt]: endDate,
           },
+          orderId,
+          isUpdated: true,
         },
         attributes: ["motorSerialNumber"],
       });
