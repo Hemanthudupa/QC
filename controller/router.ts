@@ -5,12 +5,10 @@ import { ensureController } from "../utils/authentication";
 let route = Router();
 route.use(ensureController);
 route.get(
-  "/download-controller-device-details/:orderId",
+  "/download-controller-device-details",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { orderId } = (req as any).params;
-
-      const { startDate, endDate } = req.query as any;
+      const { startDate, endDate, orderId } = req.query as any;
       res
         .status(StatusCodes.OK)
         .send(

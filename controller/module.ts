@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import { QC } from "../qc/model";
 import APIError from "../utils/api-error";
+import { Order } from "../order/model";
 
 export async function downloadControllerDeviceDetails(
   sDate: string,
@@ -8,6 +9,20 @@ export async function downloadControllerDeviceDetails(
   orderId: string
 ) {
   try {
+    const whereCondition: any = {};
+    if (orderId) {
+      const order = await Order.findOne({
+        where: {
+          id: orderId,
+        },
+      });
+      if (!order) {
+        throw new APIError(" invlaid order id ", " INVALID ORDER ID ");
+      } else {
+        whereCondition["orderId"] = orderId;
+      }
+    }
+    whereCondition.isUpdated = true;
     if (sDate && eDate) {
       let startDate = new Date(`${sDate}`);
       let endDate = new Date(`${eDate}`);
@@ -21,8 +36,7 @@ export async function downloadControllerDeviceDetails(
             [Op.gt]: startDate,
             [Op.lt]: endDate,
           },
-          orderId,
-          isUpdated: true,
+          ...whereCondition,
         },
         attributes: ["controllerSerialNumber", "rmsDeviceId", "imeiNo"],
       });

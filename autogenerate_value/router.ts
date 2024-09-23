@@ -20,11 +20,27 @@ route.get(
   "/autogenerate",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { motorHp, headSize, motorCategory, options } = req.query as any;
+      const {
+        motorHp,
+        headSize,
+        motorCategory,
+        options,
+        motorType,
+        controllerBoxType,
+      } = req.query as any;
 
       res
         .status(StatusCodes.OK)
-        .send(await autogenerate(motorHp, headSize, motorCategory, options));
+        .send(
+          await autogenerate(
+            motorHp,
+            headSize,
+            motorCategory,
+            options,
+            motorType,
+            controllerBoxType
+          )
+        );
     } catch (error) {
       next(error);
     }

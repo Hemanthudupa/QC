@@ -5,11 +5,10 @@ import { ensureMotor } from "../utils/authentication";
 let routes = Router();
 routes.use(ensureMotor);
 routes.get(
-  "/download-motor-device-details/:orderId",
+  "/download-motor-device-details",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { orderId } = (req as any).params;
-      const { startDate, endDate } = req.query as any;
+      const { startDate, endDate, orderId } = req.query as any;
       res
         .status(StatusCodes.OK)
         .send(await downloadMotorDeviceDetails(startDate, endDate, orderId));

@@ -8,7 +8,10 @@ route.get(
   "/get-all-order-details",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      res.status(StatusCodes.OK).send(await getAllOrderDetails());
+      const { options } = req.query;
+      res
+        .status(StatusCodes.OK)
+        .send(await getAllOrderDetails(options as string));
     } catch (error) {
       next(error);
     }

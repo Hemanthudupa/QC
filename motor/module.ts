@@ -9,29 +9,34 @@ export async function downloadMotorDeviceDetails(
   orderId: string
 ) {
   try {
-    const order = await Order.findOne({
-      where: {
-        id: orderId,
-      },
-    });
-    if (!order) {
-      throw new APIError(" invlaid order id ", " INVALID ORDER ID ");
+    const whereCondition: any = {};
+    if (orderId) {
+      const order = await Order.findOne({
+        where: {
+          id: orderId,
+        },
+      });
+      if (!order) {
+        throw new APIError(" invlaid order id ", " INVALID ORDER ID ");
+      } else {
+        whereCondition["orderId"] = orderId;
+      }
     }
+    whereCondition.isUpdated = true;
+
     if (sDate && eDate) {
       let startDate = new Date(`${sDate}`);
       let endDate = new Date(`${eDate}`);
-      console.log(startDate, endDate, " is UTC time ");
       startDate.setUTCHours(0, 0, 0, 1);
       endDate.setUTCHours(23, 59, 59, 59);
-      console.log(startDate, endDate);
+
       return await QC.findAll({
         where: {
           createdAt: {
             [Op.gt]: startDate,
             [Op.lt]: endDate,
           },
-          orderId,
-          isUpdated: true,
+          ...whereCondition,
         },
         attributes: ["motorSerialNumber"],
       });

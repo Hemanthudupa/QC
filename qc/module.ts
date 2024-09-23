@@ -16,7 +16,7 @@ export async function addRmsDetails(
       options == "PMC" ||
       options == "C" ||
       options == "PM" ||
-      options == "M"
+      options == "P"
     ) {
       const validatedData = await rmsDetailsAuth.validateAsync(rmsDetails);
       const {
@@ -295,10 +295,10 @@ export async function downloadQcDetails(
             },
           ],
         });
-      } else if (options.toLowerCase() == "m") {
+      } else if (options.toLowerCase() == "p") {
         return await QC.findAll({
           where: {
-            product_set: "M",
+            product_set: "P",
             createdAt: {
               [Op.gte]: startDate,
               [Op.lte]: endDate,
