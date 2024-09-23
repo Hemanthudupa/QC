@@ -141,8 +141,12 @@ export async function addRmsDetails(
         dataFromDb.product_set = options;
 
         createdData = await dataFromDb.save(validatedData);
-      } else {
+      } else if (
+        options.toLowerCase() == "pm" ||
+        options.toLowerCase() == "p"
+      ) {
         validatedData.product_set = options;
+        validatedData.isUpdated = true;
         createdData = await QC.create(validatedData);
       }
       const autogenerate_Value_fromDB = await Autogenerate_Value.findOne({
