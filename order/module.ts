@@ -35,7 +35,7 @@ export async function registerOrder(orderDetails: OrderDetails) {
   }
 }
 
-export async function getAllOrderDetails(option: string) {
+// export async function getAllOrderDetails(option: string) {
 export async function getAllOrderDetails(option: string) {
   try {
     const whereCondition: any = {};
