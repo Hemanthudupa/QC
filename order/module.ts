@@ -36,6 +36,7 @@ export async function registerOrder(orderDetails: OrderDetails) {
 }
 
 export async function getAllOrderDetails(option: string) {
+export async function getAllOrderDetails(option: string) {
   try {
     const whereCondition: any = {};
     if (option && option.toLowerCase() == "qc") {
@@ -55,6 +56,7 @@ export async function getAllOrderDetails(option: string) {
       where: {
         count: { [Op.gt]: 0 },
         status: "ONGOING",
+        ...whereCondition,
         ...whereCondition,
       },
     });
