@@ -9,8 +9,9 @@ import order from "./order/router";
 import user from "./users/router";
 import { authorizeUser } from "./utils/authentication";
 import cors from "cors";
-import controller from "./controller/router";
 import motor from "./motor/router";
+import controller from "./controller/router";
+
 let app = express();
 app.use(morgan("common"));
 app.use(cors());
@@ -23,8 +24,9 @@ app.use("/autogenerateValue", autogenerateValue);
 app.use("/qc", qc);
 app.use("/embed", embed);
 app.use("/order", order);
-app.use("/controller", controller);
 app.use("/motor", motor);
+app.use("/controller", controller);
+
 app.use(errorHandler);
 
 function errorHandler(

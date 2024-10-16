@@ -22,7 +22,7 @@ export const MOTOR_CATEGORY = {
   dc: "DC",
 };
 
-export const MOTOR_HP = [1, 2, 3, 5, 7.5, 10, 12.5, 15, 20];
+export const MOTOR_HP = [1, 2, 3, 5, 75, 10, 125, 15, 20];
 
 export const MOTOR_PURPOSE = {
   irrigation: "IRRIGATION",

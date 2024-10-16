@@ -25,7 +25,7 @@ export async function registerHP(data: registerHP) {
         motorHp,
         [Op.or]: [
           { rmsDeviceId },
-          { motorSerialNumber },
+          // { motorSerialNumber },
           { controllerSerialNumber },
           { modelNumber },
         ],
@@ -33,7 +33,7 @@ export async function registerHP(data: registerHP) {
     });
     if (autogenVal) {
       throw new APIError(
-        "hp or headsize or rmsDeviceId or motorSerialNumber or controllerSerialNumber or modelNumber  already registered  ",
+        "hp or headsize or rmsDeviceId  or controllerSerialNumber or modelNumber  already registered  ",
         " DUPLICATE  INFO"
       );
     }
@@ -51,10 +51,12 @@ export async function autogenerate(
   motorHp: number,
   headSize: number,
   motorCategory: string,
-  options: string
+  options: string,
+  motorType: string,
+  controllerBoxType: string
 ) {
   try {
-    if (motorHp && headSize && motorCategory && options) {
+    if (motorHp && headSize && motorCategory) {
       const dataFromDb = await Autogenerate_Value.findOne({
         where: {
           motorHp,
@@ -62,19 +64,43 @@ export async function autogenerate(
           motorCategory,
         },
       });
-
+      if (!dataFromDb) {
+        throw new APIError(" data not found ");
+      }
       if (options.toLocaleLowerCase() == "controllerserialnumber") {
-        const conSerialNum = dataFromDb?.controllerSerialNumber.slice(
-          0,
-          15
-        ) as string;
+        let conSerialNum;
+        if (headSize != 100) {
+          conSerialNum = dataFromDb?.controllerSerialNumber.slice(
+            0,
+            15
+          ) as string;
+          console.log(headSize, " is the headsize ");
+          console.log(" came to if part ", conSerialNum);
+        } else {
+          conSerialNum = dataFromDb?.controllerSerialNumber.slice(
+            0,
+            16
+          ) as string;
+          console.log("came to else part  now again");
+        }
+
         const conSerialNumCount = Number(
-          dataFromDb?.controllerSerialNumber.split("M")[1]
+          dataFromDb?.controllerSerialNumber.split("M")[1].slice(6)
         );
 
+        console.log(conSerialNumCount, " is the number count");
+        const date = new Date();
+        const month = `${date.getMonth() + 1}`.padStart(2, "0");
+        const year = date.getFullYear();
+        console.log(conSerialNum, " is the conserialnumber");
+        if (!conSerialNum.includes(controllerBoxType)) {
+          conSerialNum = controllerBoxType + conSerialNum.slice(4);
+        }
+        console.log(conSerialNum, " is the conserailnum updated ");
         dataFromDb!.controllerSerialNumber =
-          conSerialNum + (conSerialNumCount + 1);
+          conSerialNum + "M" + month + year + (conSerialNumCount + 1);
         console.log(conSerialNum, conSerialNumCount);
+
         return dataFromDb?.controllerSerialNumber;
       } else if (options.toLocaleLowerCase() == "motorserialnumber") {
         // let [firstHalf, secondHalf] = dataFromDb?.motorSerialNumber.split(
@@ -88,17 +114,76 @@ export async function autogenerate(
         // dataFromDb!.motorSerialNumber = firstHalf + "-" + secondHalf;
         // return dataFromDb?.motorSerialNumber;
 
-        let firstHalf = dataFromDb?.motorSerialNumber.slice(0, 7);
+        let firstHalf;
+        if (headSize == 100 && dataFromDb.motorSerialNumber.includes("SDW")) {
+          firstHalf = dataFromDb?.motorSerialNumber.slice(0, 8);
+          // console.log(firstHalf, "  if");
+        } else if (
+          headSize != 100 &&
+          dataFromDb.motorSerialNumber.includes("SDW")
+        ) {
+          firstHalf = dataFromDb?.motorSerialNumber.slice(0, 7);
+          // console.log(
+          //   firstHalf,
+          //   "  else if motorserialnumber SDW head not 100"
+          // );
+        } else if (
+          headSize == 100 &&
+          dataFromDb.motorSerialNumber.includes("SF")
+        ) {
+          firstHalf = dataFromDb?.motorSerialNumber.slice(0, 7);
+          // console.log(firstHalf, "  else if motorserialnumber SF head 100");
+        } else {
+          firstHalf = dataFromDb?.motorSerialNumber.slice(0, 6);
+          // console.log(firstHalf, " else  ");
+        }
         const date = new Date();
-        const month = `${date.getMonth()}`.padStart(2, "0");
+        const month = `${date.getMonth() + 1}`.padStart(2, "0");
         const year = date.getFullYear();
 
         firstHalf = firstHalf + month + year;
+        let modifiedFirstHalf;
+        if (firstHalf.includes("SDW") && motorType == "submersible") {
+          // console.log("came inside the if conditon ");
+          modifiedFirstHalf = firstHalf;
+        } else if (firstHalf.includes("SF") && motorType == "submersible") {
+          // console.log("came inside the 1st else if  conditon ");
 
-        let secondHalf = Number(dataFromDb?.motorSerialNumber.slice(13));
+          modifiedFirstHalf = firstHalf.replace("SF", "SDW");
+        } else if (firstHalf.includes("SDW") && motorType == "surface") {
+          // console.log("came inside the 2nd else if  conditon ");
 
+          modifiedFirstHalf = firstHalf.replace("SDW", "SF");
+        } else {
+          // console.log("came inside the else   conditon ");
+
+          modifiedFirstHalf = firstHalf;
+        }
+        let secondHalf;
+        if (headSize == 100 && dataFromDb?.motorSerialNumber.includes("SDW")) {
+          secondHalf = Number(dataFromDb?.motorSerialNumber.slice(14));
+          console.log("came to if ", secondHalf);
+        } else if (
+          headSize == 100 &&
+          dataFromDb?.motorSerialNumber.includes("SF")
+        ) {
+          secondHalf = Number(dataFromDb?.motorSerialNumber.slice(13));
+          console.log("came to 1 else if ", secondHalf);
+        } else if (
+          headSize != 100 &&
+          dataFromDb?.motorSerialNumber.includes("SDW")
+        ) {
+          secondHalf = Number(dataFromDb?.motorSerialNumber.slice(13));
+          console.log("came to 2 else if ", secondHalf);
+        } else {
+          secondHalf = Number(dataFromDb?.motorSerialNumber.slice(12));
+          console.log("came to else  ", secondHalf);
+        }
+        console.log(firstHalf, secondHalf);
         secondHalf = secondHalf + 1;
-        return (dataFromDb!.motorSerialNumber = firstHalf + secondHalf);
+        console.log(secondHalf, " is the second half ");
+
+        return (dataFromDb!.motorSerialNumber = modifiedFirstHalf + secondHalf);
       } else if (options.toLocaleLowerCase() == "modelnumber") {
         return dataFromDb?.modelNumber;
       }

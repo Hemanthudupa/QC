@@ -8,10 +8,10 @@ routes.get(
   "/download-motor-device-details",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { startDate, endDate } = req.query as any;
+      const { startDate, endDate, orderId } = req.query as any;
       res
         .status(StatusCodes.OK)
-        .send(await downloadMotorDeviceDetails(startDate, endDate));
+        .send(await downloadMotorDeviceDetails(startDate, endDate, orderId));
     } catch (error) {
       next(error);
     }

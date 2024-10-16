@@ -16,7 +16,7 @@ export async function addRmsDetails(
       options == "PMC" ||
       options == "C" ||
       options == "PM" ||
-      options == "M"
+      options == "P"
     ) {
       const validatedData = await rmsDetailsAuth.validateAsync(rmsDetails);
       const {
@@ -48,8 +48,11 @@ export async function addRmsDetails(
       const QcFromDb = await QC.findOne({
         where: {
           [Op.or]: arrClause,
+          motorCategory,
         },
       });
+
+      console.log(QcFromDb?.dataValues);
 
       if (QcFromDb) {
         throw new APIError("duplicate properties ", "DUPLICATE INPUTS");
@@ -141,8 +144,12 @@ export async function addRmsDetails(
         dataFromDb.product_set = options;
 
         createdData = await dataFromDb.save(validatedData);
-      } else {
+      } else if (
+        options.toLowerCase() == "pm" ||
+        options.toLowerCase() == "p"
+      ) {
         validatedData.product_set = options;
+        validatedData.isUpdated = true;
         createdData = await QC.create(validatedData);
       }
       const autogenerate_Value_fromDB = await Autogenerate_Value.findOne({
@@ -199,9 +206,20 @@ export async function getRmsDetails(imeiNo: string) {
 export async function downloadQcDetails(
   options: string,
   date1: string,
-  date2: string
+  date2: string,
+  orderId: string
 ) {
   try {
+    const order = await Order.findOne({
+      where: {
+        id: orderId,
+      },
+    });
+
+    if (!order) {
+      throw new APIError("invalid orderId ", " INVLAID ORDER ID ");
+    }
+    console.log(order);
     let startDate = new Date(`${date1}`); //YYYY-MM-DD
     let endDate = new Date(`${date2}`); //YYYY-MM-DD
 
@@ -214,10 +232,12 @@ export async function downloadQcDetails(
       if (options.toLowerCase() == "pmc") {
         const responseData = await QC.findAll({
           where: {
-            createdAt: {
+            updatedAt: {
               [Op.gte]: startDate,
               [Op.lte]: endDate,
             },
+            orderId,
+            isUpdated: true,
             product_set: "PMC",
           },
           include: [
@@ -232,15 +252,18 @@ export async function downloadQcDetails(
               attributes: ["orderNumber"],
             },
           ],
+          order: [["updatedAt", "ASC"]],
         });
         return responseData;
       } else if (options.toLowerCase() == "c") {
         return await QC.findAll({
           where: {
-            createdAt: {
+            updatedAt: {
               [Op.gte]: startDate,
               [Op.lte]: endDate,
             },
+            orderId,
+            isUpdated: true,
             product_set: "C",
           },
           include: [
@@ -255,15 +278,18 @@ export async function downloadQcDetails(
               attributes: ["orderNumber"],
             },
           ],
+          order: [["updatedAt", "ASC"]],
         });
       } else if (options.toLowerCase() == "pm") {
         return await QC.findAll({
           where: {
             product_set: "PM",
-            createdAt: {
+            updatedAt: {
               [Op.gte]: startDate,
               [Op.lte]: endDate,
             },
+            isUpdated: true,
+            orderId,
           },
           include: [
             {
@@ -277,15 +303,20 @@ export async function downloadQcDetails(
               attributes: ["orderNumber"],
             },
           ],
+          order: [["updatedAt", "ASC"]],
         });
-      } else if (options.toLowerCase() == "m") {
+      } else if (options.toLowerCase() == "p") {
         return await QC.findAll({
           where: {
-            product_set: "M",
-            createdAt: {
+            product_set: "P",
+            updatedAt: {
               [Op.gte]: startDate,
               [Op.lte]: endDate,
             },
+
+            isUpdated: true,
+
+            orderId,
           },
           include: [
             {
@@ -299,6 +330,7 @@ export async function downloadQcDetails(
               attributes: ["orderNumber"],
             },
           ],
+          order: [["updatedAt", "ASC"]],
         });
       } else {
         throw new APIError(" give proper option ", "INVALID OPTION");

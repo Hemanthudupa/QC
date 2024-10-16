@@ -30,14 +30,15 @@ route.get(
 );
 
 route.get(
-  "/download-qc-details",
+  "/download-qc-details/:orderid",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const { orderid } = (req as any).params;
       const { options, startDate, endDate } = req.query as any;
 
       res
         .status(StatusCodes.OK)
-        .send(await downloadQcDetails(options, startDate, endDate));
+        .send(await downloadQcDetails(options, startDate, endDate, orderid));
     } catch (error) {
       next(error);
     }

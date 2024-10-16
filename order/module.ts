@@ -35,12 +35,27 @@ export async function registerOrder(orderDetails: OrderDetails) {
   }
 }
 
-export async function getAllOrderDetails() {
+export async function getAllOrderDetails(option: string) {
   try {
+    const whereCondition: any = {};
+    if (option && option.toLowerCase() == "qc") {
+      whereCondition["qcCount"] = {
+        [Op.gte]: 0,
+      };
+    } else if (option && option.toLowerCase() == "embed") {
+      whereCondition["embedCount"] = {
+        [Op.gte]: 0,
+      };
+    } else {
+      throw new APIError("please provide valid option", "INVALID OPTIONS");
+    }
+
+    console.log(whereCondition);
     const orders = await Order.findAll({
       where: {
         count: { [Op.gt]: 0 },
         status: "ONGOING",
+        ...whereCondition,
       },
     });
     if (orders.length > 0) {
@@ -65,6 +80,8 @@ export async function updateOrderDetails(orderId: string, count: number) {
         orderFromDb.status = "ONGOING";
 
         orderFromDb.count = Number(orderFromDb.count) + count;
+        orderFromDb.embedCount = Number(orderFromDb.embedCount) + count;
+        orderFromDb.qcCount = Number(orderFromDb.qcCount) + count;
         const data = await orderFromDb.save();
         return {
           message: `count updated for this orderId ${orderId}`,

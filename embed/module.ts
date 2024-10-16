@@ -25,6 +25,8 @@ export async function embedAddRmsDetais(
       throw new APIError("invalid Order id ", "INVALID ORDER ID ");
     }
 
+    console.log(orderFromDb.dataValues, " is the order came from db ");
+
     const validatedEmbedAddRmsDetails =
       await embedAddRmsDetaisValidation.validateAsync(embedRmsDetails);
 
@@ -100,7 +102,9 @@ export async function generateRmsDeviceId(options: string, imeiNo: string) {
       let [first, second, third] = autogenerate_value?.rmsDeviceId.split(
         "-"
       ) as string[];
-      third = String(Number(third) + 1);
+      console.log(third, " is the third ");
+
+      third = String(Number(third) + 1).padStart(5, "0000");
       return [first, second, third].join("-") as string;
     } else if (options.toLocaleLowerCase() == "4g") {
       return `EC200U-${imeiNo.slice(-5)}`;

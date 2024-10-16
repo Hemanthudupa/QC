@@ -48,4 +48,4 @@ export type userType = {
   name?: string;
 };
 
-export type product_set = "PMC" | "C" | "PM" | "M";
+export type product_set = "PMC" | "C" | "PM" | "P";
