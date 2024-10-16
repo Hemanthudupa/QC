@@ -24,7 +24,7 @@ export class QC extends Model<
 > {
   declare id: CreationOptional<string>;
   declare imeiNo: CreationOptional<string>;
-  declare distributorId: ForeignKey<Distributor>;
+  declare distributorId: CreationOptional<ForeignKey<Distributor>>;
   declare orderId: CreationOptional<string>;
   declare simPhoneNumber: CreationOptional<string>;
   declare simNumber: CreationOptional<string>;

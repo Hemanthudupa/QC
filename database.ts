@@ -7,9 +7,9 @@ config({
 import { SequelizeStorage, Umzug } from "umzug";
 
 console.log(join(__dirname, ".env", "local.env"));
-const db_name = process.env.SQL_DB_NAME as string;
-const db_user = process.env.SQL_DB_USER as string;
-const db_pass = process.env.SQL_DB_PWD as string;
+const db_name = process.env.SQL_DB_NAME || ("mecwindb" as string);
+const db_user = process.env.SQL_DB_USER || ("postgres" as string);
+const db_pass = process.env.SQL_DB_PWD || ("root" as string);
 
 console.log(db_name, db_user, db_pass);
 const sequelize = new Sequelize(db_name, db_user, db_pass, {

@@ -9,7 +9,14 @@ export type registerHP = {
   headSize: number;
   motorCategory: string;
 };
-
+export type PdiOrderDetails = {
+  orderId: string;
+  motor_hp: string;
+  head_size: string;
+  motor_category: string;
+  controller_box_type: string;
+  orderCount: number;
+};
 export type rmsDetails = {
   motorSerialNumber?: string;
   motorHp?: number;

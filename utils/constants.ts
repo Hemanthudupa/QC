@@ -114,3 +114,8 @@ export const ORDER_STATUS = {
   ongoing: "ONGOING",
   completed: "COMPLETED",
 };
+
+export const type = {
+  normal: "NORMAL",
+  pdi: "PDI",
+};

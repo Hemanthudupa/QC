@@ -12,4 +12,7 @@ export const OderDetailsVal = Joi.object({
   status: Joi.boolean().optional().messages({
     "boolean.base": "status should true or false boolean value ",
   }),
+  type: Joi.string().optional().messages({
+    "string.base": "type should be in string",
+  }),
 });
