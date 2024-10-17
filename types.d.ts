@@ -41,6 +41,7 @@ export type OrderDetails = {
   orderNumber: string;
   count: number;
   status?: string;
+  type?: string;
 };
 
 export type login = {

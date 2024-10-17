@@ -82,6 +82,8 @@ export async function generate_And_BlockModelNo_PumbSLNO_ControllerSL(
       });
       if (from_db) {
         from_db.controllerSerialNumber = controllerserialnumber;
+        from_db.modelNumber =modelNumber
+        from_db.motorSerialNumber = pumbslnumber
         await from_db.save();
       }
       j.push(c);
