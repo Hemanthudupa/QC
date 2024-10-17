@@ -49,9 +49,22 @@ export async function generate_And_BlockModelNo_PumbSLNO_ControllerSL(
         motorType,
         controller_box_type
       );
-      let modelNumber = "2000";
-      let pumbslnumber = "25000";
-      let distributorid: string = "djfaf";
+      let modelNumber: any = await autogenerate(
+        Number(motor_hp),
+        Number(head_size),
+        motor_category,
+        "modelnumber",
+        motorType,
+        controller_box_type
+      );
+      let pumbslnumber: any = await autogenerate(
+        Number(motor_hp),
+        Number(head_size),
+        motor_category,
+        "motorserialnumber",
+        motorType,
+        controller_box_type
+      );
       const c = await QC.create({
         motorHp: motor_hp,
         headSize: head_size,
