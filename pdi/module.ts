@@ -29,6 +29,11 @@ export async function generate_And_BlockModelNo_PumbSLNO_ControllerSL(
   motorType: string
 ) {
   try {
+    const order = await Order.findOne({where:{id:orderId}})
+    if(order){
+      order.count += orderCount; 
+      await order.save();
+    }
     const pdi_name = await GeneratePdiName(motor_hp, head_size, orderId);
     const pdiRecord = await Pdi.create({
       motor_hp: motor_hp,
@@ -39,7 +44,7 @@ export async function generate_And_BlockModelNo_PumbSLNO_ControllerSL(
       orderId: orderId,
       pdi_Name: pdi_name,
     });
-    let j = [];
+    let generated_data = [];
     for (let i = 0; i < orderCount; i++) {
       let controllerserialnumber: any = await autogenerate(
         Number(motor_hp),
@@ -65,7 +70,7 @@ export async function generate_And_BlockModelNo_PumbSLNO_ControllerSL(
         motorType,
         controller_box_type
       );
-      const c = await QC.create({
+      const Qc_data = await QC.create({
         motorHp: motor_hp,
         headSize: head_size,
         controllerBoxType: controller_box_type,
@@ -82,13 +87,13 @@ export async function generate_And_BlockModelNo_PumbSLNO_ControllerSL(
       });
       if (from_db) {
         from_db.controllerSerialNumber = controllerserialnumber;
-        from_db.modelNumber =modelNumber
-        from_db.motorSerialNumber = pumbslnumber
+        from_db.modelNumber = modelNumber;
+        from_db.motorSerialNumber = pumbslnumber;
         await from_db.save();
       }
-      j.push(c);
+      generated_data.push(Qc_data);
     }
-    return j;
+    return generated_data;
   } catch (error) {
     throw new APIError((error as APIError).message, (error as APIError).code);
   }

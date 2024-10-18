@@ -1,6 +1,5 @@
 import {
   CreationOptional,
-  DataTypes,
   DATE,
   InferAttributes,
   InferCreationAttributes,
@@ -8,6 +7,7 @@ import {
   STRING,
   UUID,
   UUIDV4,
+  NUMBER
 } from "sequelize";
 import sequelize from "../database";
 
@@ -56,7 +56,7 @@ const pdiSchema = {
     allowNull: false,
   },
   orderCount: {
-    type: STRING,
+    type: NUMBER,
     allowNull: false,
   },
   orderId: {
