@@ -2,10 +2,11 @@ import { Op } from "sequelize";
 import { OrderDetails } from "../types";
 import APIError from "../utils/api-error";
 import { Order } from "./model";
-import { OderDetailsVal } from "./validation";
+import { OderDetailsVal ,PDIOderDetailsVal } from "./validation";
 
 export async function registerOrder(orderDetails: OrderDetails) {
   try {
+    
     const orderFromDb = await Order.findOne({
       where: {
         orderNumber: orderDetails.orderNumber,
@@ -13,6 +14,16 @@ export async function registerOrder(orderDetails: OrderDetails) {
     });
     if (orderFromDb) {
       throw new APIError("duplicate order number ", " DUPLICATE ORDER NUMBER ");
+    }
+    if (orderDetails.type=="PDI"){
+      const validatedOrderDetails = await PDIOderDetailsVal.validateAsync(
+        orderDetails
+      );
+      const data = await Order.create(validatedOrderDetails);
+      return {
+        message: "successfully created PDI order ",
+        data,
+      };
     }
     const validatedOrderDetails = await OderDetailsVal.validateAsync(
       orderDetails
