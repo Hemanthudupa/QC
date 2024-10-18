@@ -9,12 +9,24 @@ import { Autogenerate_Value } from "../autogenerate_value/model";
 
 export async function GetAllPdiOrder() {
   try {
-    const orders = await Order.findAll({ where: { type: "POD" } });
+    const orders = await Order.findAll({ where: { type: "PDI" } });
     if (orders.length === 0) {
-      return "No orders belong to POD";
+      return "No orders belong to PDI";
     }
     return orders;
   } catch (error) {
+    throw new APIError((error as APIError).message, (error as APIError).code);
+  }
+}
+
+export async function GetPdiOrderName(orderId:string){
+  try{
+    const pdi_name = await Pdi.findAll({where:{orderId}})
+    if (pdi_name.length === 0) {
+      return "No Suborders belong to order";
+    }
+    return pdi_name
+  }  catch (error) {
     throw new APIError((error as APIError).message, (error as APIError).code);
   }
 }
@@ -29,9 +41,9 @@ export async function generate_And_BlockModelNo_PumbSLNO_ControllerSL(
   motorType: string
 ) {
   try {
-    const order = await Order.findOne({where:{id:orderId}})
-    if(order){
-      order.count += orderCount; 
+    const order = await Order.findOne({ where: { id: orderId } });
+    if (order) {
+      order.count += orderCount;
       await order.save();
     }
     const pdi_name = await GeneratePdiName(motor_hp, head_size, orderId);

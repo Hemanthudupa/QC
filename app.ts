@@ -24,7 +24,7 @@ app.use(authorizeUser);
 app.use("/autogenerateValue", autogenerateValue);
 app.use("/qc", qc);
 app.use("/embed", embed);
-app.use("/api3", pdi);
+app.use("/pdi", pdi);
 app.use("/order", order);
 app.use("/motor", motor);
 app.use("/controller", controller);

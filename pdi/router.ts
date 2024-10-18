@@ -3,13 +3,15 @@ import { Router } from "express";
 import {
   generate_And_BlockModelNo_PumbSLNO_ControllerSL,
   GetAllPdiOrder,
+  GetPdiOrderName,
 } from "./module";
 import { StatusCodes } from "http-status-codes";
+import { string } from "joi";
 
 const router = Router();
 
 router.get(
-  "/pdiOrders",
+  "/getAll-pdiOrders",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const Orders = await GetAllPdiOrder();
@@ -21,8 +23,22 @@ router.get(
   }
 );
 
+router.get(
+  "/get-pdiorder/:orderid",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const orderid = req.params.orderid;
+    try {
+      const Order = await GetPdiOrderName(orderid);
+      console.log(Order);
+      res.status(StatusCodes.OK).send(Order);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 router.post(
-  "/generatepdi",
+  "/block-pdi-orders",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const {
