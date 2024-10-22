@@ -23,7 +23,7 @@ export class QC extends Model<
   InferCreationAttributes<QC>
 > {
   declare id: CreationOptional<string>;
-  declare imeiNo: CreationOptional<string>;
+  declare imeiNo: CreationOptional<string | null>;
   declare distributorId: CreationOptional<ForeignKey<Distributor>>;
   declare orderId: CreationOptional<string>;
   declare simPhoneNumber: CreationOptional<string>;
@@ -62,7 +62,7 @@ const qc_Schema = {
     type: STRING,
   },
   distributorId: {
-    type: UUID,
+    type: STRING,
     references: {
       model: Distributor,
       as: "distributorId",

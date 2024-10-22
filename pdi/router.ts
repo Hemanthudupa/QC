@@ -1,6 +1,7 @@
 import { NextFunction, Response, Request } from "express";
 import { Router } from "express";
 import {
+  embeded_Assign,
   generate_And_BlockModelNo_PumbSLNO_ControllerSL,
   GetAllPdiOrder,
   GetPdiOrderName,
@@ -61,6 +62,20 @@ router.post(
       );
       console.log(genereated);
       res.status(StatusCodes.OK).send(genereated);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.post(
+  "/assign-rmsDeviceId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    const data = req.body;
+    try {
+      const Order = await embeded_Assign(data);
+      console.log(Order);
+      res.status(StatusCodes.OK).send(Order);
     } catch (error) {
       next(error);
     }

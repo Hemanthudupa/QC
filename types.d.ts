@@ -55,5 +55,17 @@ export type userType = {
   role: string;
   name?: string;
 };
+export type embedPDIRmsDetails = {
+  orderId:string ,
+  subOrderName: string;
+  distributorId: string;
+  imeiNo: string;
+  simPhoneNumber: string;
+  simNumber: string;
+  simOperator: string;
+  networkType: string;
+  rmsDeviceId: string;
+  
+};
 
 export type product_set = "PMC" | "C" | "PM" | "P";
